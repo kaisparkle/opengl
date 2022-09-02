@@ -7,7 +7,7 @@
 
 namespace GLRenderer {
     void Model::init(const std::string &filePath, Shader *shader) {
-        _textureManager = new TextureManager("../assets/devtex/dev_grid.png");
+        _textureManager = new TextureManager("../assets/devtex/dev_black.png");
         _modelShader = shader;
 
         Assimp::Importer importer;

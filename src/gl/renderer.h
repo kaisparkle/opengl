@@ -52,7 +52,10 @@ namespace GLRenderer {
         double _delta = 0;
         uint32_t _windowWidth = 0;
         uint32_t _windowHeight = 0;
-        Shader *_defaultShader = nullptr;
+        float _lightColor[3] = {1.0f, 1.0f, 1.0f};
+        float _lightPower = 64.0f;
+        float _lightRadius = 64.0f;
+        Shader *_pbrShader = nullptr;
         ModelManager *_modelManager = nullptr;
         FlyCamera *_flyCamera = nullptr;
 

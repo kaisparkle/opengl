@@ -10,7 +10,7 @@
 
 constexpr uint32_t DEFAULT_WINDOW_WIDTH = 1366;
 constexpr uint32_t DEFAULT_WINDOW_HEIGHT = 768;
-constexpr float DEFAULT_FOV_DEG = 110.0f;
+constexpr float DEFAULT_FOV_DEG = 90.0f;
 
 int main(int argc, char *argv[]) {
     uint32_t windowWidth = DEFAULT_WINDOW_WIDTH;
@@ -52,8 +52,10 @@ int main(int argc, char *argv[]) {
     // set the default viewport size
     glViewport(0, 0, (GLsizei) windowWidth, (GLsizei) windowHeight);
 
-    // enable depth buffer
+    // enable depth buffer and blend
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // set up imgui
     ImGui::CreateContext();

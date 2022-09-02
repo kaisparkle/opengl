@@ -11,6 +11,9 @@ layout (binding = 1) uniform sampler2D texture_normal;
 layout (binding = 2) uniform sampler2D texture_roughness;
 
 layout (location = 3) uniform vec3 camPos;
+layout (location = 4) uniform float lightRadius;
+layout (location = 5) uniform float lightPower;
+layout (location = 6) uniform vec3 lightColor;
 
 const float PI = 3.14159265359;
 // ----------------------------------------------------------------------------
@@ -77,10 +80,7 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 // ----------------------------------------------------------------------------
 void main()
 {
-    vec3 LIGHTS[4] = vec3[](vec3(0.0, 20.0, 0.0),
-                            vec3(0.0, 20.0, 0.0),
-                            vec3(0.0, 20.0, 0.0),
-                            vec3(0.0, 20.0, 0.0));
+    vec3 LIGHTS[1] = vec3[](vec3(0.0f, 5.0f, 0.0f));
 
     vec3 albedo     = pow(texture(texture_base, fUV).rgb, vec3(2.2));
     float metallic  = texture(texture_roughness, fUV).r;
@@ -97,14 +97,19 @@ void main()
 
     // reflectance equation
     vec3 Lo = vec3(0.0);
-    for(int i = 0; i < 4; ++i)
+    for(int i = 0; i < LIGHTS.length(); ++i)
     {
         // calculate per-light radiance
         vec3 L = normalize(LIGHTS[i] - fWorldPos);
         vec3 H = normalize(V + L);
         float distance = length(LIGHTS[i] - fWorldPos);
-        float attenuation = 1.0 / (distance * distance);
-        vec3 radiance = vec3(0.992f, 0.984f, 0.827) * attenuation * 250;
+
+        // inverse square falloff - Karis, 2013
+        float falloffNumerator = pow(clamp(1 - pow((distance / lightRadius), 4), 0.0f, 1.0f), 2);
+        float falloffDenominator = pow(distance, 2) + 1;
+        float falloff = falloffNumerator / falloffDenominator;
+
+        vec3 radiance = lightColor * falloff * lightPower;
 
         // Cook-Torrance BRDF
         float NDF = DistributionGGX(N, H, roughness);

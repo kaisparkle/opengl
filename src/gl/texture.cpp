@@ -22,29 +22,15 @@ namespace GLRenderer {
             return _defaultTexture;
         }
 
-        // check texture format
-        GLenum format;
-        switch (texChannels) {
-            case 3:
-                format = GL_RGB;
-                break;
-            case 4:
-                format = GL_RGBA;
-                break;
-            default:
-                std::cout << "Unknown format for texture " << filePath << ", substituting for default" << std::endl;
-                return _defaultTexture;
-        }
-
         // create texture
         Texture newTexture;
         newTexture.type = typeName;
 
         // generate and set parameters
+        GLenum format = GL_RGBA;
         glGenTextures(1, &newTexture.id);
         glBindTexture(GL_TEXTURE_2D, newTexture.id);
         glTexImage2D(GL_TEXTURE_2D, 0, (GLint) format, texWidth, texHeight, 0, format, GL_UNSIGNED_BYTE, pixels);
-        glGenerateMipmap(GL_TEXTURE_2D);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

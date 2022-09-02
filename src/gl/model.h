@@ -24,8 +24,9 @@ namespace GLRenderer {
         float translation[3] = {0.0f, 0.0f, 0.0f};
         float rotation[3] = {0.0f, 0.0f, 0.0f};
         float scale[3] = {1.0f, 1.0f, 1.0f};
-    private:
         Shader *_modelShader;
+
+    private:
         glm::mat4 _modelMatrix = glm::mat4{1.0f};
         TextureManager *_textureManager;
         std::string _directory;

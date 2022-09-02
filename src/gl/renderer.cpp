@@ -25,15 +25,15 @@ namespace GLRenderer {
     }
 
     void Renderer::init_shaders() {
-        _defaultShader = new Shader("../shaders/pbr.vert.spv", "../shaders/pbr.frag.spv");
+        _pbrShader = new Shader("../shaders/pbr.vert.spv", "../shaders/pbr.frag.spv");
     }
 
     void Renderer::init_scene() {
-        _modelManager->create_model("../assets/sponza-gltf-pbr/sponza.glb", "sponza", _defaultShader);
+        _modelManager->create_model("../assets/sponza-gltf-pbr/sponza.glb", "sponza", _pbrShader);
         _modelManager->models["sponza"].scale[0] = 0.1f;
         _modelManager->models["sponza"].scale[1] = 0.1f;
         _modelManager->models["sponza"].scale[2] = 0.1f;
-        _modelManager->create_model("../assets/SciFiHelmet.gltf", "helmet", _defaultShader);
+        _modelManager->create_model("../assets/SciFiHelmet.gltf", "helmet", _pbrShader);
         _modelManager->models["helmet"].translation[1] = 10.0f;
         _modelManager->models["helmet"].scale[0] = 3.0f;
         _modelManager->models["helmet"].scale[1] = 3.0f;
@@ -75,6 +75,9 @@ namespace GLRenderer {
         ImGui::SetNextWindowPos(sceneWindowPos, 0, sceneWindowPivot);
         ImGui::SetNextWindowSize(sceneWindowSize);
         ImGui::Begin("Scene", nullptr);
+        ImGui::DragFloat("Light Power", &_lightPower, 1.0f, 0.0f, 0.0f, "%.1f");
+        ImGui::DragFloat("Light Radius", &_lightRadius, 1.0f, 0.0f, 0.0f, "%.1f");
+        ImGui::ColorEdit3("Light Color", _lightColor);
         for (auto &it: _modelManager->models) {
             if (ImGui::TreeNode(it.first.c_str())) {
                 ImGui::DragFloat3("Translation", it.second.translation, 1.0f, 0.0f, 0.0f, "%.1f");
@@ -95,9 +98,12 @@ namespace GLRenderer {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         for (auto &it: _modelManager->models) {
-            _defaultShader->bind();
-            _defaultShader->set_mat4("matrix_viewproj", _flyCamera->projection * _flyCamera->get_view_matrix());
-            _defaultShader->set_vec3("camPos", _flyCamera->position);
+            it.second._modelShader->bind();
+            it.second._modelShader->set_mat4("matrix_viewproj", _flyCamera->projection * _flyCamera->get_view_matrix());
+            it.second._modelShader->set_vec3("camPos", _flyCamera->position);
+            it.second._modelShader->set_float("lightRadius", _lightRadius);
+            it.second._modelShader->set_float("lightPower", _lightPower);
+            it.second._modelShader->set_vec3("lightColor", glm::vec3(_lightColor[0], _lightColor[1], _lightColor[2]));
             it.second.update_transform();
             it.second.draw_model();
         }
