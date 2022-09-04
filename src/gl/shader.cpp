@@ -4,21 +4,30 @@
 #include <vector>
 
 namespace GLRenderer {
-    Shader::Shader(const std::string &vertPath, const std::string &fragPath) {
+    Shader::Shader(const std::string &vertPath, const std::string &fragPath, const std::string &geomPath) {
         // only support loading from SPIR-V for now
         uint32_t vertexShader = 0;
         uint32_t fragShader = 0;
+        uint32_t geomShader = 0;
         if (!load_shader_binary(vertPath, vertexShader, GL_VERTEX_SHADER)) {
             std::cout << "Failed to load vertex shader" << std::endl;
         }
         if (!load_shader_binary(fragPath, fragShader, GL_FRAGMENT_SHADER)) {
             std::cout << "Failed to load fragment shader" << std::endl;
         }
+        if (!geomPath.empty()) {
+            if (!load_shader_binary(geomPath, geomShader, GL_GEOMETRY_SHADER)) {
+                std::cout << "Failed to load geometry shader" << std::endl;
+            }
+        }
 
         // link the shaders
         programID = glCreateProgram();
         glAttachShader(programID, vertexShader);
         glAttachShader(programID, fragShader);
+        if (!geomPath.empty()) {
+            glAttachShader(programID, geomShader);
+        }
         glLinkProgram(programID);
 
         // check
@@ -33,6 +42,9 @@ namespace GLRenderer {
         // delete once final program is linked
         glDeleteShader(vertexShader);
         glDeleteShader(fragShader);
+        if (!geomPath.empty()) {
+            glDeleteShader(geomShader);
+        }
     }
 
     void Shader::bind() const {
@@ -55,8 +67,12 @@ namespace GLRenderer {
         glUniformMatrix4fv(glGetUniformLocation(programID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
-    void Shader::set_vec3(const std::string &name, const glm::vec3 &value) const {
+    void Shader::set_glm_vec3(const std::string &name, const glm::vec3 &value) const {
         glUniform3fv(glGetUniformLocation(programID, name.c_str()), 1, &value[0]);
+    }
+
+    void Shader::set_float_vec3(const std::string &name, float x, float y, float z) const {
+        glUniform3f(glGetUniformLocation(programID, name.c_str()), x, y, z);
     }
 
     bool Shader::load_shader_binary(const std::string &filePath, uint32_t &id, uint32_t type) {

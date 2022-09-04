@@ -16,7 +16,9 @@ namespace GLRenderer {
 
         void update_transform();
 
-        void draw_model();
+        void draw_model(unsigned int depthTexture);
+
+        void draw_model_untextured(Shader *shader);
 
         std::vector<Mesh> meshes;
 

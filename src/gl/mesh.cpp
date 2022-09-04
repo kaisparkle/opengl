@@ -35,7 +35,7 @@ namespace GLRenderer {
         glBindVertexArray(0);
     }
 
-    void Mesh::draw_mesh(glm::mat4 modelMatrix, Shader *shader) {
+    void Mesh::draw_mesh(glm::mat4 modelMatrix, Shader *shader, unsigned int depthTexture) {
         // bind PBR textures
         glActiveTexture(GL_TEXTURE0);
         shader->set_int("texture_base", 0);
@@ -46,7 +46,17 @@ namespace GLRenderer {
         glActiveTexture(GL_TEXTURE2);
         shader->set_int("texture_roughness", 2);
         glBindTexture(GL_TEXTURE_2D, pbrTexture->metalroughness->id);
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, depthTexture);
 
+        // draw
+        shader->set_mat4("matrix_model", modelMatrix);
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
+    }
+
+    void Mesh::draw_mesh_untextured(glm::mat4 modelMatrix, Shader *shader) {
         // draw
         shader->set_mat4("matrix_model", modelMatrix);
         glBindVertexArray(VAO);

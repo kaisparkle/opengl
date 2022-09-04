@@ -46,9 +46,15 @@ namespace GLRenderer {
         _modelMatrix = newTransform;
     }
 
-    void Model::draw_model() {
+    void Model::draw_model(unsigned int depthTexture) {
         for (auto &mesh: meshes) {
-            mesh.draw_mesh(_modelMatrix, _modelShader);
+            mesh.draw_mesh(_modelMatrix, _modelShader, depthTexture);
+        }
+    }
+
+    void Model::draw_model_untextured(Shader *shader) {
+        for (auto &mesh: meshes) {
+            mesh.draw_mesh_untextured(_modelMatrix, shader);
         }
     }
 

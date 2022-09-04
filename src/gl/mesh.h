@@ -15,6 +15,8 @@ namespace GLRenderer {
 
         void setup_mesh();
 
-        void draw_mesh(glm::mat4 modelMatrix, Shader *shader);
+        void draw_mesh(glm::mat4 modelMatrix, Shader *shader, unsigned int depthTexture);
+
+        void draw_mesh_untextured(glm::mat4 modelMatrix, Shader *shader);
     };
 }
