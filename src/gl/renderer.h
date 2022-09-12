@@ -62,6 +62,7 @@ namespace GLRenderer {
         float _lightPower = 8192.0f;
         float _lightRadius = 8192.0f;
         float _lightPos[3] = {0.0f, 50.0f, 0.0f};
+        float _prevLightPos[3];
         float _gamma = 2.2f;
 
         Shader *_pbrShader = nullptr;
@@ -70,11 +71,12 @@ namespace GLRenderer {
         ModelManager *_modelManager = nullptr;
         FlyCamera *_flyCamera = nullptr;
 
-        const unsigned int SHADOW_MAP_RES = 2048;
+        const unsigned int SHADOW_MAP_RES = 4096;
         unsigned int depthMapFBO = 0;
         unsigned int depthCubemap = 0;
         float _shadowNear = 0.1f;
         float _shadowFar = 2000.0f;
+        float _shadowBias = 0.15f;
 
         void init_shaders();
 

@@ -109,6 +109,7 @@ namespace GLRenderer {
         ImGui::DragFloat3("Light Position", _lightPos, 1.0f, 0.0f, 0.0f, "%.1f");
         ImGui::ColorEdit3("Light Color", _lightColor);
         ImGui::DragFloat("Gamma", &_gamma, 0.1f, 0.0f, 10.0f, "%.1f");
+        ImGui::DragFloat("Shadow Bias", &_shadowBias, 0.01f, 0.0f, 10.0f, "%.2f");
         for (auto &it: _modelManager->models) {
             if (ImGui::TreeNode(it.first.c_str())) {
                 ImGui::DragFloat3("Translation", it.second.translation, 1.0f, 0.0f, 0.0f, "%.1f");
@@ -125,10 +126,15 @@ namespace GLRenderer {
         update_ui();
         ImGui::Render();
 
-        draw_shadow_map();
+        // only re-render the shadow map if the light position updated
+        if(!std::equal(std::begin(_prevLightPos), std::end(_prevLightPos), std::begin(_lightPos))) {
+            draw_shadow_map();
+        }
         draw_scene();
-
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        // store the light position
+        std::copy(std::begin(_lightPos), std::end(_lightPos), std::begin(_prevLightPos));
     }
 
     void Renderer::draw_shadow_map() {
@@ -200,6 +206,7 @@ namespace GLRenderer {
             it.second._modelShader->set_float("far_plane", _shadowFar);
             it.second._modelShader->set_float_vec3("lightPos", _lightPos[0], _lightPos[1], _lightPos[2]);
             it.second._modelShader->set_float("gamma", _gamma);
+            it.second._modelShader->set_float("shadowBias", _shadowBias);
             it.second.update_transform();
             it.second.draw_model(depthCubemap);
         }

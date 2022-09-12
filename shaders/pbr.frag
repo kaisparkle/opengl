@@ -18,6 +18,7 @@ layout (location = 7) uniform vec3 lightColor;
 layout (location = 8) uniform float far_plane;
 layout (location = 9) uniform vec3 lightPos;
 layout (location = 10) uniform float gamma;
+layout (location = 11) uniform float shadowBias;
 
 // array of offset direction for sampling
 vec3 gridSamplingDisk[20] = vec3[]
@@ -62,7 +63,7 @@ float ShadowCalculation(vec3 fragPos)
     // }
     // shadow /= (samples * samples * samples);
     float shadow = 0.0;
-    float bias = 0.15;
+    float bias = shadowBias;
     int samples = 20;
     float viewDistance = length(camPos - fragPos);
     float diskRadius = (1.0 + (viewDistance / far_plane)) / 25.0;
