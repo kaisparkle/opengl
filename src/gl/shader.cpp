@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <sstream>
 
 namespace GLRenderer {
     Shader::Shader(const std::string &vertPath, const std::string &fragPath, const std::string &geomPath) {
@@ -107,6 +108,42 @@ namespace GLRenderer {
             glGetShaderInfoLog(id, 512, nullptr, infoLog);
             std::cout << "Shader loading failed\n" << infoLog << std::endl;
         }
+        return result;
+    }
+
+    bool Shader::load_shader_file(const std::string &filePath, uint32_t &id, uint32_t type) {
+        // load shader source from file
+        std::ifstream shaderFile;
+        shaderFile.open(filePath);
+        if(!shaderFile) {
+            std::cout << "Failed to load shader source" << std::endl;
+            return false;
+        }
+
+        // read in shader source
+        std::string shaderCode;
+        std::stringstream shaderStream;
+        shaderStream << shaderFile.rdbuf();
+        shaderFile.close();
+
+        // convert to char for compiling
+        shaderCode = shaderStream.str();
+        const char* shaderCodeChar = shaderCode.c_str();
+
+        // compile
+        id = glCreateShader(type);
+        glShaderSource(id, 1, &shaderCodeChar, nullptr);
+        glCompileShader(id);
+
+        // check
+        int result = 0;
+        glGetShaderiv(id, GL_COMPILE_STATUS, &result);
+        if (!result) {
+            char infoLog[512];
+            glGetShaderInfoLog(id, 512, nullptr, infoLog);
+            std::cout << "Shader loading failed\n" << infoLog << std::endl;
+        }
+
         return result;
     }
 }

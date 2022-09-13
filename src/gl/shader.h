@@ -27,5 +27,7 @@ namespace GLRenderer {
 
     private:
         static bool load_shader_binary(const std::string &filePath, uint32_t &id, uint32_t type);
+
+	static bool load_shader_file(const std::string &filePath, uint32_t &id, uint32_t type);
     };
 }
